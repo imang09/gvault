@@ -1,0 +1,55 @@
+.page { padding: var(--space-2xl) 0; }
+.pageTitle { font-size: var(--font-size-3xl); font-weight: 800; margin-bottom: var(--space-sm); }
+.subtitle { color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-lg); }
+
+.disclaimer {
+  background: rgba(255, 179, 71, 0.08);
+  border: 1px solid rgba(255, 179, 71, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  color: var(--accent-warning);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.filters { display: flex; gap: var(--space-sm); margin-bottom: var(--space-xl); flex-wrap: wrap; }
+.gameFilter {
+  appearance: none;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  cursor: pointer;
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--space-md); }
+
+.card { padding: var(--space-lg); }
+.cardHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+.cardGame { font-weight: 700; }
+.cardPrice { font-size: var(--font-size-xl); font-weight: 800; color: var(--accent-warning); }
+
+.cardStats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+.cardStat { text-align: center; padding: var(--space-sm); background: var(--bg-glass); border-radius: var(--radius-sm); }
+.cardStatLabel { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+.cardStatValue { font-weight: 700; font-size: var(--font-size-lg); color: var(--text-primary); }
+
+.cardDesc { font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.6; }
+
+.cardFooter { display: flex; align-items: center; justify-content: space-between; font-size: var(--font-size-xs); color: var(--text-tertiary); }
+.cardContact { color: var(--accent-info); }
+.cardSource { display: flex; align-items: center; gap: 4px; }
+.cardSourceLink { color: var(--accent-primary); text-decoration: none; }
+.cardSourceLink:hover { text-decoration: underline; }
+
+.emptyState { text-align: center; padding: var(--space-3xl); color: var(--text-tertiary); }
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+}

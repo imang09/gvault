@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gvault-svc
+  namespace: gvault
+  labels:
+    app: gvault
+spec:
+  type: NodePort
+  selector:
+    app: gvault
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080

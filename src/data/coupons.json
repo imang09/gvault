@@ -1,0 +1,132 @@
+[
+  {
+    "id": "coupon-001",
+    "gameSlug": "code-arc",
+    "code": "WELCOME2026",
+    "description": "다이아몬드 300개 + 골드 50000",
+    "descriptionEn": "300 Diamonds + 50,000 Gold",
+    "issuedDate": "2026-04-15",
+    "expiryDate": "2026-05-15",
+    "expired": false,
+    "source": "official",
+    "sourceUrl": "https://codearc.example.com/news/123"
+  },
+  {
+    "id": "coupon-002",
+    "gameSlug": "code-arc",
+    "code": "SPRING2026",
+    "description": "스태미나 100 + 가챠 티켓 5장",
+    "descriptionEn": "100 Stamina + 5 Gacha Tickets",
+    "issuedDate": "2026-04-10",
+    "expiryDate": "2026-04-30",
+    "expired": false,
+    "source": "discord",
+    "sourceUrl": "https://discord.gg/codearc"
+  },
+  {
+    "id": "coupon-003",
+    "gameSlug": "code-arc",
+    "code": "YOUTUBE500K",
+    "description": "다이아 500개",
+    "descriptionEn": "500 Diamonds",
+    "issuedDate": "2026-04-16",
+    "expiryDate": null,
+    "expired": false,
+    "source": "youtube",
+    "sourceUrl": "https://youtube.com/@codearc"
+  },
+  {
+    "id": "coupon-004",
+    "gameSlug": "stellar-girls",
+    "code": "STAR100",
+    "description": "스타 젬 100개 + SR 선택권",
+    "descriptionEn": "100 Star Gems + SR Selector",
+    "issuedDate": "2026-04-12",
+    "expiryDate": "2026-05-12",
+    "expired": false,
+    "source": "twitter",
+    "sourceUrl": "https://twitter.com/stellargirls"
+  },
+  {
+    "id": "coupon-005",
+    "gameSlug": "stellar-girls",
+    "code": "SGOPEN",
+    "description": "골드 100000",
+    "descriptionEn": "100,000 Gold",
+    "issuedDate": "2026-01-20",
+    "expiryDate": "2026-02-20",
+    "expired": true,
+    "source": "official"
+  },
+  {
+    "id": "coupon-006",
+    "gameSlug": "blade-fantasy",
+    "code": "BLADE777",
+    "description": "무기 강화석 50개 + 골드 200000",
+    "descriptionEn": "50 Weapon Enhancement Stones + 200,000 Gold",
+    "issuedDate": "2026-04-14",
+    "expiryDate": "2026-05-14",
+    "expired": false,
+    "source": "discord",
+    "sourceUrl": "https://discord.gg/bladefantasy"
+  },
+  {
+    "id": "coupon-007",
+    "gameSlug": "blade-fantasy",
+    "code": "BFSPRING",
+    "description": "SSR 캐릭터 소환권 1장",
+    "descriptionEn": "1 SSR Character Summon Ticket",
+    "issuedDate": "2026-04-16",
+    "expiryDate": "2026-04-23",
+    "expired": false,
+    "source": "official",
+    "sourceUrl": "https://bladefantasy.example.com/event"
+  },
+  {
+    "id": "coupon-008",
+    "gameSlug": "blade-fantasy",
+    "code": "BFGUILD",
+    "description": "길드 코인 500 + 스태미나 200",
+    "descriptionEn": "500 Guild Coins + 200 Stamina",
+    "issuedDate": "2026-04-01",
+    "expiryDate": "2026-04-15",
+    "expired": true,
+    "source": "reddit",
+    "sourceUrl": "https://reddit.com/r/bladefantasy"
+  },
+  {
+    "id": "coupon-009",
+    "gameSlug": "blade-fantasy",
+    "code": "BF100DAYS",
+    "description": "100일 기념 다이아 1000개",
+    "descriptionEn": "1000 Diamonds for 100 Days Celebration",
+    "issuedDate": "2026-04-16",
+    "expiryDate": "2026-05-16",
+    "expired": false,
+    "source": "youtube",
+    "sourceUrl": "https://youtube.com/@bladefantasy"
+  },
+  {
+    "id": "coupon-010",
+    "gameSlug": "blade-fantasy",
+    "code": "BFTIKTOK",
+    "description": "의상 교환권 1개",
+    "descriptionEn": "1 Costume Exchange Coupon",
+    "issuedDate": "2026-04-15",
+    "expiryDate": "2026-06-15",
+    "expired": false,
+    "source": "other"
+  },
+  {
+    "id": "coupon-011",
+    "gameSlug": "night-realm",
+    "code": "NRDARK",
+    "description": "어둠의 조각 30개",
+    "descriptionEn": "30 Dark Fragments",
+    "issuedDate": "2026-04-13",
+    "expiryDate": "2026-05-13",
+    "expired": false,
+    "source": "discord",
+    "sourceUrl": "https://discord.gg/nightrealm"
+  }
+]

@@ -1,0 +1,154 @@
+[
+  {
+    "slug": "code-arc",
+    "name": "코드아크",
+    "nameEn": "Code Arc",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS", "Web"],
+    "webPlayable": true,
+    "webPlayUrl": "https://play.codearc.example.com",
+    "officialSite": "https://codearc.example.com",
+    "storeLinks": {
+      "android": "https://play.google.com/store/apps/details?id=com.codearc",
+      "ios": "https://apps.apple.com/app/code-arc/id123456"
+    },
+    "releaseDate": "2025-11-15",
+    "genre": "수집형 RPG",
+    "activeCouponCount": 3,
+    "description": "코드아크는 전략적 전투와 캐릭터 수집이 핵심인 모바일 RPG입니다.",
+    "descriptionEn": "Code Arc is a mobile RPG focused on strategic combat and character collection."
+  },
+  {
+    "slug": "stellar-girls",
+    "name": "스텔라 걸즈",
+    "nameEn": "Stellar Girls",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS"],
+    "webPlayable": false,
+    "officialSite": "https://stellargirls.example.com",
+    "storeLinks": {
+      "android": "https://play.google.com/store/apps/details?id=com.stellargirls",
+      "ios": "https://apps.apple.com/app/stellar-girls/id234567"
+    },
+    "releaseDate": "2026-01-20",
+    "genre": "수집형 RPG",
+    "activeCouponCount": 2,
+    "description": "우주를 배경으로 한 캐릭터 수집형 RPG.",
+    "descriptionEn": "A character collection RPG set in space."
+  },
+  {
+    "slug": "blade-fantasy",
+    "name": "블레이드 판타지",
+    "nameEn": "Blade Fantasy",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS", "Web"],
+    "webPlayable": true,
+    "webPlayUrl": "https://play.bladefantasy.example.com",
+    "officialSite": "https://bladefantasy.example.com",
+    "storeLinks": {
+      "android": "https://play.google.com/store/apps/details?id=com.bladefantasy"
+    },
+    "releaseDate": "2026-03-05",
+    "genre": "액션 RPG",
+    "activeCouponCount": 5,
+    "description": "화려한 액션과 깊은 스토리의 RPG.",
+    "descriptionEn": "An RPG with flashy action and deep story."
+  },
+  {
+    "slug": "night-realm",
+    "name": "나이트 렐름",
+    "nameEn": "Night Realm",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS"],
+    "webPlayable": false,
+    "officialSite": "https://nightrealm.example.com",
+    "storeLinks": {
+      "android": "https://play.google.com/store/apps/details?id=com.nightrealm",
+      "ios": "https://apps.apple.com/app/night-realm/id456789"
+    },
+    "releaseDate": "2026-05-01",
+    "genre": "다크 판타지 RPG",
+    "activeCouponCount": 1,
+    "description": "다크 판타지 세계관의 하드코어 수집형 RPG.",
+    "descriptionEn": "A hardcore collection RPG set in a dark fantasy world."
+  },
+  {
+    "slug": "eden-project",
+    "name": "에덴 프로젝트",
+    "nameEn": "Eden Project",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS", "Web"],
+    "webPlayable": true,
+    "webPlayUrl": "https://play.edenproject.example.com",
+    "officialSite": "https://edenproject.example.com",
+    "storeLinks": {
+      "android": "https://play.google.com/store/apps/details?id=com.edenproject"
+    },
+    "releaseDate": "2026-06-20",
+    "genre": "SF 수집형 RPG",
+    "activeCouponCount": 0,
+    "description": "SF 세계관의 캐릭터 수집형 RPG. 아직 출시 전입니다.",
+    "descriptionEn": "A sci-fi character collection RPG. Not yet released."
+  },
+  {
+    "slug": "last-origin-x",
+    "name": "라스트 오리진 X",
+    "nameEn": "Last Origin X",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS"],
+    "webPlayable": false,
+    "officialSite": "https://lastoriginx.example.com",
+    "storeLinks": {},
+    "releaseDate": "2024-03-10",
+    "genre": "전략 RPG",
+    "activeCouponCount": 0,
+    "isShutdown": true,
+    "shutdownDate": "2026-02-28",
+    "description": "바이오로이드를 지휘하여 전투하는 전략 RPG. 독특한 세계관과 전략적 깊이로 사랑받았습니다.",
+    "descriptionEn": "A strategy RPG where you command bioroids in battle. Loved for its unique worldview and strategic depth.",
+    "developer": "SmartJoy",
+    "peakPlayers": "50만+",
+    "lastEvent": "최후의 작전 — 감사 이벤트",
+    "lastEventEn": "Final Operation — Thank You Event",
+    "shutdownReason": "수익성 악화 및 운영사 경영 문제",
+    "shutdownReasonEn": "Declining revenue and publisher management issues",
+    "timeline": [
+      { "date": "2024-03-10", "event": "정식 출시", "eventEn": "Official Launch" },
+      { "date": "2024-08-15", "event": "100만 다운로드 달성", "eventEn": "1M Downloads" },
+      { "date": "2025-06-01", "event": "대규모 시즌 2 업데이트", "eventEn": "Major Season 2 Update" },
+      { "date": "2025-12-20", "event": "서비스 종료 공지", "eventEn": "Shutdown Announcement" },
+      { "date": "2026-02-28", "event": "서비스 종료", "eventEn": "Service Shutdown" }
+    ]
+  },
+  {
+    "slug": "azure-lane-r",
+    "name": "벽람항로 R",
+    "nameEn": "Azure Lane R",
+    "thumbnail": "",
+    "platforms": ["Android", "iOS"],
+    "webPlayable": false,
+    "officialSite": "https://azurelaner.example.com",
+    "storeLinks": {},
+    "releaseDate": "2023-08-01",
+    "genre": "슈팅 RPG",
+    "activeCouponCount": 0,
+    "isShutdown": true,
+    "shutdownDate": "2025-12-31",
+    "description": "전함 소녀들과 함께하는 해전 슈팅 RPG. 아름다운 일러스트와 탄막 전투가 특징이었습니다.",
+    "descriptionEn": "A naval shooting RPG with ship girls. Known for beautiful illustrations and bullet-hell combat.",
+    "developer": "Manjuu / Yongshi",
+    "peakPlayers": "200만+",
+    "lastEvent": "영원한 항해 — 최종 페스티벌",
+    "lastEventEn": "Eternal Voyage — Final Festival",
+    "shutdownReason": "본가(벽람항로)와의 이용자 분산 및 매출 하락",
+    "shutdownReasonEn": "User fragmentation with original Azur Lane and declining revenue",
+    "timeline": [
+      { "date": "2023-08-01", "event": "정식 출시", "eventEn": "Official Launch" },
+      { "date": "2023-12-25", "event": "첫 크리스마스 이벤트", "eventEn": "First Christmas Event" },
+      { "date": "2024-06-15", "event": "1주년 기념 업데이트", "eventEn": "1st Anniversary Update" },
+      { "date": "2025-08-01", "event": "2주년 — 마지막 대규모 업데이트", "eventEn": "2nd Anniversary — Last Major Update" },
+      { "date": "2025-10-15", "event": "서비스 종료 공지", "eventEn": "Shutdown Announcement" },
+      { "date": "2025-12-31", "event": "서비스 종료", "eventEn": "Service Shutdown" }
+    ]
+  }
+]

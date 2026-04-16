@@ -1,0 +1,360 @@
+.page {
+  padding: var(--space-2xl) 0;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  text-align: center;
+  padding: var(--space-3xl) 0 var(--space-2xl);
+  position: relative;
+}
+
+.heroTitle {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-md);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== Section ===== */
+.section {
+  margin-bottom: var(--space-3xl);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+}
+
+.sectionLink {
+  font-size: var(--font-size-sm);
+  color: var(--accent-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--transition-fast);
+}
+
+.sectionLink:hover {
+  color: var(--accent-primary-hover);
+}
+
+/* ===== Coupon Highlight ===== */
+.couponGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+
+.couponItem {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.couponItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.couponGameName {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.couponCode {
+  font-family: 'Courier New', monospace;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--accent-primary-hover);
+  background: var(--accent-primary-glow);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  word-break: break-all;
+}
+
+.couponCode:hover {
+  background: rgba(124, 92, 255, 0.2);
+}
+
+.couponDesc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.couponMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* ===== Game Card Grid ===== */
+.gameGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.gameCard {
+  padding: 0;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.gameThumb {
+  width: 100%;
+  height: 160px;
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(124, 92, 255, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+}
+
+.gameThumbOverlay {
+  position: absolute;
+  bottom: var(--space-sm);
+  right: var(--space-sm);
+  display: flex;
+  gap: 4px;
+}
+
+.gameCardBody {
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.gameCardName {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.gameCardMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* ===== Play Section ===== */
+.playGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+
+.playCard {
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.playThumb {
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 170, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  position: relative;
+}
+
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.playCard:hover .playOverlay {
+  opacity: 1;
+}
+
+.playBtn {
+  background: var(--accent-secondary);
+  color: var(--text-inverse);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+.playCardBody {
+  padding: var(--space-md);
+}
+
+.playCardName {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* ===== Resell Preview ===== */
+.resellList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.resellItem {
+  padding: var(--space-md) var(--space-lg);
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  align-items: center;
+  gap: var(--space-lg);
+  font-size: var(--font-size-sm);
+}
+
+.resellGame {
+  font-weight: 600;
+}
+
+.resellInfo {
+  color: var(--text-secondary);
+}
+
+.resellPrice {
+  font-weight: 700;
+  color: var(--accent-warning);
+}
+
+/* ===== Schedule ===== */
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.scheduleItem {
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scheduleGame {
+  font-weight: 600;
+}
+
+.scheduleDate {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Memorial Preview ===== */
+.memorialGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.memorialCard {
+  padding: var(--space-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.memorialCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(124, 92, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.memorialIcon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.7;
+}
+
+.memorialName {
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.memorialDate {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+}
+
+.copyBtn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.copyBtn:hover {
+  color: var(--accent-primary);
+  background: var(--accent-primary-glow);
+}
+
+.copiedBtn {
+  color: var(--accent-secondary) !important;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: var(--font-size-3xl);
+  }
+
+  .resellItem {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  .couponGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,20 @@
+.page { padding: var(--space-2xl) 0; }
+.backLink { display: inline-flex; align-items: center; gap: 6px; color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--space-lg); transition: color var(--transition-fast); text-decoration: none; }
+.backLink:hover { color: var(--accent-primary); }
+.pageTitle { font-size: var(--font-size-3xl); font-weight: 800; margin-bottom: var(--space-xl); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-md); }
+
+.card { padding: 0; overflow: hidden; text-decoration: none; color: inherit; display: block; }
+.cardThumb { width: 100%; height: 140px; background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(124, 92, 255, 0.08) 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.cardBody { padding: var(--space-md); }
+.cardName { font-weight: 700; margin-bottom: 4px; }
+.cardMeta { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; }
+.cardRole { color: var(--text-secondary); font-size: var(--font-size-sm); }
+
+.raritySSR { color: var(--rarity-ssr); }
+.raritySR { color: var(--rarity-sr); }
+.rarityR { color: var(--rarity-r); }
+.rarityN { color: var(--rarity-n); }
+
+.emptyState { text-align: center; padding: var(--space-3xl); color: var(--text-tertiary); }

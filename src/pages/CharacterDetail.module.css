@@ -1,0 +1,60 @@
+.page { padding: var(--space-2xl) 0; }
+.backLink { display: inline-flex; align-items: center; gap: 6px; color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--space-lg); transition: color var(--transition-fast); text-decoration: none; }
+.backLink:hover { color: var(--accent-primary); }
+
+.header { display: flex; gap: var(--space-xl); margin-bottom: var(--space-2xl); }
+.thumb { width: 180px; height: 180px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(124, 92, 255, 0.1) 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem; flex-shrink: 0; }
+.info { flex: 1; }
+.charName { font-size: var(--font-size-3xl); font-weight: 800; margin-bottom: var(--space-sm); }
+.charMeta { display: flex; gap: var(--space-sm); align-items: center; flex-wrap: wrap; }
+.raritySSR { color: var(--rarity-ssr); font-weight: 700; font-size: var(--font-size-xl); }
+.raritySR { color: var(--rarity-sr); font-weight: 700; font-size: var(--font-size-xl); }
+.rarityR { color: var(--rarity-r); font-weight: 700; font-size: var(--font-size-xl); }
+.rarityN { color: var(--rarity-n); font-weight: 700; font-size: var(--font-size-xl); }
+
+.section { margin-bottom: var(--space-2xl); }
+.sectionTitle { font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--space-md); display: flex; align-items: center; gap: var(--space-sm); }
+
+/* Stats */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-sm);
+}
+.statItem {
+  padding: var(--space-md);
+  text-align: center;
+}
+.statLabel { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.statValue { font-size: var(--font-size-2xl); font-weight: 800; color: var(--accent-primary-hover); }
+.statPercent { font-size: var(--font-size-2xl); font-weight: 800; color: var(--accent-secondary); }
+
+/* Skills */
+.skillList { display: flex; flex-direction: column; gap: var(--space-sm); }
+.skillItem { padding: var(--space-md) var(--space-lg); }
+.skillHeader { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+.skillName { font-weight: 700; }
+.skillDesc { color: var(--text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
+.skillCooldown { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 4px; }
+
+/* Decks */
+.deckList { display: flex; flex-direction: column; gap: var(--space-sm); }
+.deckItem { padding: var(--space-md) var(--space-lg); }
+.deckName { font-weight: 700; margin-bottom: var(--space-xs); color: var(--accent-warning); }
+.deckDesc { color: var(--text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
+
+/* Gear */
+.gearList { display: flex; flex-direction: column; gap: var(--space-sm); }
+.gearItem { padding: var(--space-md) var(--space-lg); }
+.gearName { font-weight: 700; margin-bottom: 2px; color: var(--accent-info); }
+.gearOptions { font-size: var(--font-size-sm); color: var(--accent-secondary); margin-bottom: 4px; }
+.gearReason { font-size: var(--font-size-sm); color: var(--text-secondary); line-height: 1.6; }
+
+.notFound { text-align: center; padding: var(--space-3xl); color: var(--text-tertiary); font-size: var(--font-size-lg); }
+
+@media (max-width: 768px) {
+  .header { flex-direction: column; align-items: center; text-align: center; }
+  .thumb { width: 140px; height: 140px; }
+  .charMeta { justify-content: center; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+}
