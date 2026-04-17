@@ -85,7 +85,11 @@ export function getGameName(slug: string, locale: string = 'ko'): string {
 export function formatDate(dateStr: string | null, locale: string = 'ko'): string {
   if (!dateStr) return locale === 'ko' ? '미정' : 'TBD';
   const date = new Date(dateStr);
-  return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : locale === 'ja' ? 'ja-JP' : locale === 'zh' ? 'zh-CN' : 'en-US', {
+  const localeMap: Record<string, string> = {
+    ko: 'ko-KR', en: 'en-US', ja: 'ja-JP', zh: 'zh-CN', 'zh-TW': 'zh-TW',
+    ru: 'ru-RU', vi: 'vi-VN', th: 'th-TH', es: 'es-ES',
+  };
+  return date.toLocaleDateString(localeMap[locale] || 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

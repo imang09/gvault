@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useI18n } from '../i18n';
+import { useI18n, copyToClipboard } from '../i18n';
 import {
   getAllGames,
   getRecentCoupons,
@@ -26,20 +26,16 @@ export default function Home() {
   const shutdownGames = getShutdownGames();
 
   const handleCopy = async (code: string, id: string) => {
-    await navigator.clipboard.writeText(code);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    const ok = await copyToClipboard(code);
+    if (ok) {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   return (
     <div className={styles.page}>
-      {/* Hero */}
-      <section className={styles.hero}>
-        <div className="container">
-          <h1 className={styles.heroTitle}>{t('home.hero.title')}</h1>
-          <p className={styles.heroSubtitle}>{t('home.hero.subtitle')}</p>
-        </div>
-      </section>
+
 
       <div className="container">
         {/* Today's Coupons */}

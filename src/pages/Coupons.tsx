@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useI18n } from '../i18n';
+import { useI18n, copyToClipboard } from '../i18n';
 import {
   getAllCoupons,
   getAllGames,
@@ -30,9 +30,11 @@ export default function Coupons() {
   }, [allCoupons, status, gameFilter]);
 
   const handleCopy = async (code: string, id: string) => {
-    await navigator.clipboard.writeText(code);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    const ok = await copyToClipboard(code);
+    if (ok) {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   return (
