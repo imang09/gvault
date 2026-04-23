@@ -1,0 +1,51 @@
+name: Scrape Coupons
+
+on:
+  schedule:
+    # Staggered runs at non-round minutes (3 runs per day ≈ 8h intervals)
+    # Effective interval: 6~10h between runs, appears random
+    - cron: '17 3 * * *'    # 03:17 UTC
+    - cron: '42 11 * * *'   # 11:42 UTC  (~8.4h later)
+    - cron: '8 20 * * *'    # 20:08 UTC  (~8.4h later)
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    name: Scrape Coupon Codes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Random delay: -5 to +10 minutes (0-900 seconds)
+      - name: Random delay to avoid detection
+        run: |
+          DELAY=$(( (RANDOM % 900) ))
+          echo "⏳ Waiting ${DELAY} seconds before scraping..."
+          sleep $DELAY
+
+      - name: Run scraper
+        run: node scripts/scrape-coupons.mjs
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet src/data/coupons.json src/data/games.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit & push new coupons
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/coupons.json src/data/games.json
+          git commit -m "data: update coupons $(date +'%Y-%m-%d %H:%M')"
+          git push

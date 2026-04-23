@@ -5,7 +5,7 @@ import styles from './Characters.module.css';
 
 export default function Characters() {
   const { slug } = useParams<{ slug: string }>();
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const game = slug ? getGameBySlug(slug) : undefined;
   const characters = slug ? getCharactersByGame(slug) : [];
 
@@ -14,7 +14,7 @@ export default function Characters() {
       <div className="container">
         <Link to={`/games/${slug}`} className={styles.backLink}>← {t('common.back')}</Link>
         <h1 className={styles.pageTitle}>
-          {game ? (locale === 'ko' ? game.name : game.nameEn) : ''} — {t('characters.title')}
+          {game ? (game.nameEn) : ''} — {t('characters.title')}
         </h1>
 
         {characters.length > 0 ? (
@@ -28,15 +28,15 @@ export default function Characters() {
                 <div className={styles.cardThumb}>👤</div>
                 <div className={styles.cardBody}>
                   <div className={styles.cardName}>
-                    {locale === 'ko' ? char.name : char.nameEn || char.name}
+                    {char.nameEn || char.name}
                   </div>
                   <div className={styles.cardMeta}>
                     <span className={styles[`rarity${char.rarity}`]}>{char.rarity}</span>
                     <span className="badge badge-primary">
-                      {locale === 'ko' ? char.element : char.elementEn || char.element}
+                      {char.elementEn || char.element}
                     </span>
                     <span className={styles.cardRole}>
-                      {locale === 'ko' ? char.role : char.roleEn || char.role}
+                      {char.roleEn || char.role}
                     </span>
                   </div>
                 </div>

@@ -69,7 +69,7 @@ export default function Home() {
                     </button>
                   </div>
                   <p className={styles.couponDesc}>
-                    {locale === 'ko' ? coupon.description : coupon.descriptionEn || coupon.description}
+                    {coupon.descriptionEn || coupon.description}
                   </p>
                   <div className={styles.couponMeta}>
                     <span>{getSourceIcon(coupon.source)} {coupon.source}</span>
@@ -103,7 +103,7 @@ export default function Home() {
                 </div>
                 <div className={styles.gameCardBody}>
                   <div className={styles.gameCardName}>
-                    {locale === 'ko' ? game.name : game.nameEn}
+                    {game.nameEn}
                   </div>
                   <div className={styles.gameCardMeta}>
                     {game.platforms.map(p => (
@@ -147,7 +147,7 @@ export default function Home() {
                   </div>
                   <div className={styles.playCardBody}>
                     <div className={styles.playCardName}>
-                      {locale === 'ko' ? game.name : game.nameEn}
+                      {game.nameEn}
                     </div>
                   </div>
                 </a>
@@ -178,7 +178,7 @@ export default function Home() {
                     SSR×{item.ssrCount}
                   </span>
                   <span className={styles.resellInfo}>
-                    {locale === 'ko' ? item.server : item.serverEn || item.server}
+                    {item.serverEn || item.server}
                   </span>
                   <span className={styles.resellPrice}>
                     {item.price}
@@ -199,7 +199,7 @@ export default function Home() {
               {upcomingGames.map(game => (
                 <div key={game.slug} className={`glass-card ${styles.scheduleItem}`}>
                   <span className={styles.scheduleGame}>
-                    {locale === 'ko' ? game.name : game.nameEn}
+                    {game.nameEn}
                   </span>
                   <span className={styles.scheduleDate}>
                     {formatDate(game.releaseDate, locale)}
@@ -224,7 +224,7 @@ export default function Home() {
                 <div key={game.slug} className={`glass-card ${styles.memorialCard}`}>
                   <div className={styles.memorialIcon}>🕯️</div>
                   <div className={styles.memorialName}>
-                    {locale === 'ko' ? game.name : game.nameEn}
+                    {game.nameEn}
                   </div>
                   <div className={styles.memorialDate}>
                     {formatDate(game.shutdownDate || null, locale)}

@@ -3,10 +3,10 @@ import { getWebPlayableGames } from '../utils/data';
 import styles from './Play.module.css';
 
 export default function Play() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const games = getWebPlayableGames();
 
-  const l = (ko?: string, en?: string) => (locale === 'ko' ? ko : en) || ko || '';
+  const l = (ko?: string, en?: string) => (en || ko || '');
 
   return (
     <div className={styles.page}>

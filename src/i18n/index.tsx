@@ -28,18 +28,18 @@ export async function copyToClipboard(text: string): Promise<boolean> {
 
 /* ===== Country → Locale mapping ===== */
 const COUNTRY_LOCALE_MAP: Record<string, Locale> = {
-  KR: 'ko',
   RU: 'ru', BY: 'ru', KZ: 'ru', UA: 'ru',
   TW: 'zh-TW', HK: 'zh-TW', MO: 'zh-TW',
   CN: 'zh', SG: 'zh',
   VN: 'vi',
   TH: 'th',
   JP: 'ja',
+  KR: 'en',
   ES: 'es', MX: 'es', AR: 'es', CO: 'es', CL: 'es', PE: 'es',
   US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IN: 'en',
 };
 
-const ALL_LOCALES: Locale[] = ['ko', 'en', 'ja', 'zh', 'zh-TW', 'ru', 'vi', 'th', 'es'];
+const ALL_LOCALES: Locale[] = ['en', 'ja', 'zh', 'zh-TW', 'ru', 'vi', 'th', 'es'];
 
 async function detectLocaleByIP(): Promise<Locale> {
   try {
@@ -53,106 +53,6 @@ async function detectLocaleByIP(): Promise<Locale> {
 }
 
 /* ===== Translation Data ===== */
-const ko: Record<string, string> = {
-  'nav.home': '홈',
-  'nav.coupons': '쿠폰',
-  'nav.games': '게임',
-  'nav.play': '웹 게임',
-  'nav.resell': '리세마라 매물',
-  'nav.memorial': '추모관',
-
-  'home.coupons.title': '🎫 최신 쿠폰',
-  'home.coupons.viewAll': '전체 보기',
-  'home.games.title': '🎮 등록된 게임',
-  'home.play.title': '🌐 웹 게임 바로가기',
-  'home.resell.title': '💎 리세마라 매물',
-  'home.schedule.title': '📅 신작 출시 일정',
-  'home.memorial.title': '🕯️ 서비스 종료 게임',
-
-  'coupons.title': '전체 쿠폰',
-  'coupons.filter.all': '전체',
-  'coupons.selectGame': '🎮 게임 선택',
-  'coupons.filter.active': '유효',
-  'coupons.filter.expired': '만료',
-  'coupons.copy': '복사',
-  'coupons.copied': '복사됨!',
-  'coupons.unknown': '미정',
-  'coupons.expired': '만료됨',
-  'coupons.active': '유효',
-  'coupons.noCoupons': '등록된 쿠폰이 없습니다.',
-  'coupons.activeCoupons': '개의 유효한 쿠폰',
-
-  'game.platforms': '플랫폼',
-  'game.officialSite': '공식 사이트',
-  'game.store': '스토어',
-  'game.coupons': '쿠폰 보기',
-  'game.characters': '캐릭터 정보',
-  'game.play': '웹 게임',
-  'game.resell': '리세마라 매물',
-  'game.releaseDate': '출시일',
-  'game.genre': '장르',
-  'game.webPlayable': '웹 플레이 가능',
-  'game.notFound': '게임을 찾을 수 없습니다.',
-
-  'characters.title': '캐릭터 목록',
-  'characters.stats': '기본 스탯',
-  'characters.skills': '스킬 정보',
-  'characters.decks': '추천 덱 조합',
-  'characters.gear': '추천 장비',
-  'characters.attack': '공격력',
-  'characters.hp': 'HP',
-  'characters.defense': '방어력',
-  'characters.speed': '속도',
-  'characters.critRate': '치명타 확률',
-  'characters.critDamage': '치명타 피해',
-  'characters.active': '액티브',
-  'characters.passive': '패시브',
-  'characters.ultimate': '궁극기',
-  'characters.cooldown': '쿨다운',
-  'characters.notFound': '캐릭터를 찾을 수 없습니다.',
-
-  'resell.title': '리세마라 계정 매물',
-  'resell.disclaimer': '이 사이트는 중개가 아닌 정보 정리/연결 목적입니다. 거래 시 주의하세요.',
-  'resell.server': '서버',
-  'resell.level': '레벨',
-  'resell.ssr': 'SSR',
-  'resell.sr': 'SR',
-  'resell.price': '가격',
-  'resell.contact': '연락처',
-  'resell.noListings': '등록된 매물이 없습니다.',
-
-  'play.title': '웹 게임 바로가기',
-  'play.subtitle': '브라우저에서 바로 플레이할 수 있는 게임 링크 모음',
-  'play.button': '지금 플레이',
-  'play.noGames': '웹 게임 링크가 없습니다.',
-
-  'memorial.title': '추모관',
-  'memorial.subtitle': '서비스가 종료된 게임들을 기억합니다. 함께했던 시간을 되돌아봅니다.',
-  'memorial.shutdownDate': '서비스 종료일',
-  'memorial.noGames': '서비스 종료된 게임이 없습니다.',
-  'memorial.restInPeace': '영원히 기억합니다',
-  'memorial.servicePeriod': '서비스 기간',
-  'memorial.developer': '개발사',
-  'memorial.peakPlayers': '최대 동접',
-  'memorial.lastEvent': '마지막 이벤트',
-  'memorial.description': '한줄 소개',
-  'memorial.timeline': '주요 연혁',
-  'memorial.shutdownReason': '종료 사유',
-
-  'common.loading': '로딩 중...',
-  'common.error': '오류가 발생했습니다.',
-  'common.back': '뒤로',
-  'common.viewMore': '더 보기',
-  'common.search': '검색...',
-  'common.noResults': '결과가 없습니다.',
-
-  'footer.description': '객관적인 게임 정보만을 제공합니다.',
-  'footer.links': '바로가기',
-  'footer.legal': '법적 고지',
-  'footer.copyright': '© 2026 Gvault. All rights reserved.',
-  'footer.disclaimer': '이 사이트는 비공식 팬 사이트입니다.',
-};
-
 const en: Record<string, string> = {
   'nav.home': 'Home',
   'nav.coupons': 'Coupons',
@@ -579,7 +479,7 @@ const es: Record<string, string> = {
 
 /* ===== Translations Map ===== */
 const translations: Record<Locale, Record<string, string>> = {
-  ko, en, ja, zh, 'zh-TW': zhTW, ru, vi, th, es,
+  en, ja, zh, 'zh-TW': zhTW, ru, vi, th, es,
 };
 
 /* ===== i18n Context ===== */
@@ -645,7 +545,6 @@ export function useI18n() {
 }
 
 export const LOCALE_LABELS: Record<Locale, string> = {
-  ko: '한국어',
   en: 'English',
   ja: '日本語',
   zh: '简体中文',

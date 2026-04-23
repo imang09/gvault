@@ -5,7 +5,7 @@ import styles from './CharacterDetail.module.css';
 
 export default function CharacterDetail() {
   const { slug, id } = useParams<{ slug: string; id: string }>();
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const char = id ? getCharacterById(id) : undefined;
 
   if (!char) {
@@ -18,7 +18,7 @@ export default function CharacterDetail() {
     );
   }
 
-  const l = (ko: string, en?: string) => locale === 'ko' ? ko : (en || ko);
+  const l = (ko: string, en?: string) => en || ko;
 
   const skillTypeLabel = (type: string) => {
     const map: Record<string, string> = {

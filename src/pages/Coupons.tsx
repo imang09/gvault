@@ -61,7 +61,7 @@ export default function Coupons() {
             <option value="all">{t('coupons.selectGame')}</option>
             {games.map(g => (
               <option key={g.slug} value={g.slug}>
-                {locale === 'ko' ? g.name : g.nameEn}
+                {g.nameEn}
               </option>
             ))}
           </select>
@@ -73,7 +73,7 @@ export default function Coupons() {
               <div key={coupon.id} className={`glass-card ${styles.couponRow} fade-in`}>
                 <span className={styles.couponRowCode}>{coupon.code}</span>
                 <span className={styles.couponRowDesc}>
-                  {locale === 'ko' ? coupon.description : coupon.descriptionEn || coupon.description}
+                  {coupon.descriptionEn || coupon.description}
                 </span>
                 <span className={styles.couponRowGame}>
                   {getGameName(coupon.gameSlug, locale)}

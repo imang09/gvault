@@ -125,7 +125,7 @@ export interface ResellListing {
 
 /* ===== i18n Types ===== */
 
-export type Locale = 'ko' | 'en' | 'ja' | 'zh' | 'zh-TW' | 'ru' | 'vi' | 'th' | 'es';
+export type Locale = 'en' | 'ja' | 'zh' | 'zh-TW' | 'ru' | 'vi' | 'th' | 'es';
 
 export interface TranslationStrings {
   [key: string]: string | TranslationStrings;

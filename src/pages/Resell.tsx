@@ -35,7 +35,7 @@ export default function Resell() {
               <option value="all">{t('coupons.selectGame')}</option>
               {games.map(g => (
                 <option key={g.slug} value={g.slug}>
-                  {locale === 'ko' ? g.name : g.nameEn}
+                  {g.nameEn}
                 </option>
               ))}
             </select>
@@ -67,7 +67,7 @@ export default function Resell() {
                 </div>
 
                 <p className={styles.cardDesc}>
-                  {locale === 'ko' ? item.description : item.descriptionEn || item.description}
+                  {item.descriptionEn || item.description}
                 </p>
 
                 <div className={styles.cardFooter}>
@@ -76,7 +76,7 @@ export default function Resell() {
                       {t('resell.contact')}: {item.contact}
                     </div>
                     <div>
-                      {t('resell.server')}: {locale === 'ko' ? item.server : item.serverEn || item.server}
+                      {t('resell.server')}: {item.serverEn || item.server}
                     </div>
                   </div>
                   <div className={styles.cardSource}>

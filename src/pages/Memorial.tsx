@@ -6,7 +6,7 @@ export default function Memorial() {
   const { t, locale } = useI18n();
   const games = getShutdownGames();
 
-  const l = (ko?: string, en?: string) => (locale === 'ko' ? ko : en) || ko || '';
+  const l = (ko?: string, en?: string) => (en || ko || '');
 
   return (
     <div className={styles.page}>

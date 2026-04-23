@@ -76,14 +76,14 @@ export function getResellByGame(gameSlug: string): ResellListing[] {
 }
 
 /* ===== Helpers ===== */
-export function getGameName(slug: string, locale: string = 'ko'): string {
+export function getGameName(slug: string, _locale: string = 'en'): string {
   const game = getGameBySlug(slug);
   if (!game) return slug;
-  return locale === 'ko' ? game.name : game.nameEn;
+  return game.nameEn || game.name;
 }
 
 export function formatDate(dateStr: string | null, locale: string = 'ko'): string {
-  if (!dateStr) return locale === 'ko' ? '미정' : 'TBD';
+  if (!dateStr) return 'TBD';
   const date = new Date(dateStr);
   const localeMap: Record<string, string> = {
     ko: 'ko-KR', en: 'en-US', ja: 'ja-JP', zh: 'zh-CN', 'zh-TW': 'zh-TW',

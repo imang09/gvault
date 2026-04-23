@@ -34,7 +34,7 @@ export default function GameDetail() {
           <div className={styles.thumb}>🎮</div>
           <div className={styles.info}>
             <h1 className={styles.gameName}>
-              {locale === 'ko' ? game.name : game.nameEn}
+              {game.nameEn}
             </h1>
             <div className={styles.gameGenre}>{game.genre}</div>
             <div className={styles.platforms}>
@@ -50,7 +50,7 @@ export default function GameDetail() {
               )}
             </div>
             <p className={styles.desc}>
-              {locale === 'ko' ? game.description : game.descriptionEn || game.description}
+              {game.descriptionEn || game.description}
             </p>
             <div className={styles.links}>
               <a href={game.officialSite} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
