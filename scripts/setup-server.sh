@@ -36,17 +36,34 @@ echo "📦 Installing dependencies..."
 npm install playwright
 npx playwright install --with-deps chromium
 
-# 5) Create cron wrapper with random delay
+# 5) Create cron wrapper with random delay + auto deploy
 cat > /opt/gvault/scripts/cron-scrape.sh << 'CRONEOF'
 #!/bin/bash
-# Random delay: -5 to +10 minutes (0-900 seconds)
+LOG="/var/log/gvault-scraper.log"
+
+# Random delay: 0-900 seconds (0~15 min)
 DELAY=$(( RANDOM % 900 ))
-echo "[$(date)] Sleeping ${DELAY}s before scraping..."
+echo "[$(date)] Sleeping ${DELAY}s before scraping..." >> $LOG
 sleep $DELAY
 
 cd /opt/gvault
-git pull origin main 2>/dev/null || true
-node scripts/scrape-coupons.mjs >> /var/log/gvault-scraper.log 2>&1
+git pull origin main >> $LOG 2>&1 || true
+
+# Run scraper
+echo "[$(date)] Starting scraper..." >> $LOG
+node scripts/scrape-coupons.mjs >> $LOG 2>&1
+
+# If coupons were pushed, rebuild & redeploy
+if git log --oneline -1 | grep -q "data:"; then
+  echo "[$(date)] New coupons pushed, rebuilding..." >> $LOG
+  git pull origin main >> $LOG 2>&1
+  docker build -t ghcr.io/imang09/gvault:latest . >> $LOG 2>&1
+  docker save ghcr.io/imang09/gvault:latest | k3s ctr images import - >> $LOG 2>&1
+  kubectl rollout restart deployment gvault -n gvault >> $LOG 2>&1
+  echo "[$(date)] Deploy complete" >> $LOG
+fi
+
+echo "[$(date)] Done" >> $LOG
 CRONEOF
 chmod +x /opt/gvault/scripts/cron-scrape.sh
 
