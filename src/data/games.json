@@ -193,23 +193,5 @@
     "activeCouponCount": 0,
     "description": "Ero Dorado is an adult RPG.",
     "descriptionEn": "Ero Dorado is an adult RPG."
-  },
-  {
-    "slug": "everlusting-life",
-    "name": "Everlusting Life",
-    "nameEn": "Everlusting Life",
-    "thumbnail": "",
-    "platforms": [
-      "Android",
-      "iOS"
-    ],
-    "webPlayable": false,
-    "officialSite": "https://www.ero-labs.com",
-    "storeLinks": {},
-    "releaseDate": "2025-01-01",
-    "genre": "RPG",
-    "activeCouponCount": 0,
-    "description": "Everlusting Life is an adult collectible RPG.",
-    "descriptionEn": "Everlusting Life is an adult collectible RPG."
   }
 ]
