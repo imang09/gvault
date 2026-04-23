@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gvault
-          image: ghcr.io/imang09/gvault:a02c43c
+          image: ghcr.io/imang09/gvault:eaa5215
           ports:
             - containerPort: 80
           resources:
