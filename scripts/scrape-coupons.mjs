@@ -20,15 +20,13 @@ const REPO_DIR = process.env.REPO_DIR || join(__dirname, '..');
 const COUPONS_PATH = join(REPO_DIR, 'src', 'data', 'coupons.json');
 const GAMES_PATH = join(REPO_DIR, 'src', 'data', 'games.json');
 
-/* ===== Nitter Instances (primary first, fallback rotation) ===== */
+/* ===== Nitter Instances (wiki 2026-04-17, working only) ===== */
 const NITTER_INSTANCES = [
   'https://nitter.net',
-  'https://nitter.privacydev.net',
   'https://nitter.poast.org',
-  'https://nitter.1d4.us',
-  'https://nitter.mint.lgbt',
-  'https://nitter.woodland.cafe',
-  'https://nitter.unixfox.eu',
+  'https://nitter.privacydev.net',
+  'https://xcancel.com',
+  'https://nitter.cz',
 ];
 
 /* ===== Game Scrape Configs ===== */
@@ -224,7 +222,7 @@ async function scrapePage(page, url, timeout = 30000) {
 async function scrapeNitter(page, handle, patterns, exclude) {
   for (const instance of NITTER_INSTANCES) {
     const url = `${instance}/${handle}`;
-    const text = await scrapePage(page, url, 20000);
+    const text = await scrapePage(page, url, 10000);
 
     if (text && text.length >= 500) {
       const codes = extractCodes(text, patterns, exclude);
@@ -327,6 +325,7 @@ async function main() {
       '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     viewport: { width: 1920, height: 1080 },
     locale: 'ko-KR',
+    ignoreHTTPSErrors: true,
   });
 
   try {
