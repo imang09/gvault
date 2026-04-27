@@ -59,7 +59,8 @@ const GAME_CONFIGS = [
       { type: 'arca', url: 'https://arca.live/b/riseoferos?category=%EC%BF%A0%ED%8F%B0' },
     ],
     patterns: null,
-    exclude: ['RiseofEros', 'RiseOfEros'],
+    articleExtract: true, // Line-based extraction from article body
+    exclude: ['RiseofEros', 'RiseOfEros', 'EROLABS', 'riseoferos'],
   },
   {
     slug: 'cherrytale',
@@ -132,6 +133,24 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randomSleep = (min, max) =>
   sleep(Math.floor(Math.random() * (max - min)) + min);
 
+/* ===== False-positive blocklist ===== */
+const FP_BLOCKLIST = new Set([
+  // UI / HTML
+  'Continue', 'Download', 'Settings', 'Comments', 'Homepage', 'Category',
+  'Bookmark', 'Subscribe', 'Unsubscribe', 'Recommend', 'Translate',
+  'Previous', 'Notifications', 'LiveConfig', 'Arcalive', 'Compatible',
+  'Application', 'NanumGothic', 'BlinkMacSystemFont', 'NanumBarunGothic',
+  // Social / platform
+  'Facebook', 'Twitter', 'YouTube', 'Instagram', 'Discord', 'Telegram',
+  'TikTok', 'Pinterest', 'WhatsApp', 'Twitch',
+  // Tech
+  'Android', 'Windows', 'EROLABS', 'Samsung', 'iPhone',
+  'ChromeOS', 'Mozilla', 'Firefox', 'Safari',
+  // Common false matches
+  'undefined', 'function', 'document', 'console', 'Object',
+  'Seoulwork', 'Paraguay', 'PRIVACIDAD', 'LivePageAd',
+]);
+
 /* ===== extractCodes ===== */
 /**
  * Extract coupon codes from page text.
@@ -155,7 +174,6 @@ function extractCodes(text, patterns, exclude) {
     }
   } else {
     // Generic: scan text around coupon-related keywords
-    // Window: 200 chars before keyword + 500 chars after keyword
     const kwRegex = /(?:쿠폰|코드|coupon|code|보물코드|리딤코드|redeem|교환|입력)/gi;
     let kw;
     while ((kw = kwRegex.exec(text)) !== null) {
@@ -166,11 +184,90 @@ function extractCodes(text, patterns, exclude) {
       let cm;
       while ((cm = codeRx.exec(nearby)) !== null) {
         const c = cm[1];
-        // Must contain both letters AND digits (filters out plain words)
         if (/[A-Za-z]/.test(c) && /[0-9]/.test(c) && !excluded.has(c)) {
           codes.add(c);
         }
       }
+    }
+  }
+
+  return [...codes];
+}
+
+/* ===== extractArticleBody ===== */
+/**
+ * Extract only the article body text from an arca.live post page.
+ * Uses CSS selectors to isolate content from menus/sidebars.
+ */
+async function extractArticleBody(page) {
+  return page.evaluate(() => {
+    const selectors = [
+      '.article-body',        // arca.live main
+      '.article-content',
+      '.fr-view',             // Froala editor
+      'article .body',
+      '.content-wrapper .body',
+    ];
+    for (const sel of selectors) {
+      const el = document.querySelector(sel);
+      if (el && el.innerText.trim().length > 20) return el.innerText;
+    }
+    // Fallback: full body
+    return document.body.innerText;
+  });
+}
+
+/* ===== isCouponLike ===== */
+/**
+ * Check if a token looks like a coupon code.
+ * - Mixed case (upper+lower) or contains digits
+ * - Not in blocklist
+ * - Not a URL fragment
+ */
+function isCouponLike(token) {
+  if (FP_BLOCKLIST.has(token)) return false;
+  if (/^https?/i.test(token)) return false;
+  if (/^(class|style|width|height|div|span|font|text|data|aria|src|href)/i.test(token)) return false;
+
+  const hasUpper = /[A-Z]/.test(token);
+  const hasLower = /[a-z]/.test(token);
+  const hasDigit = /[0-9]/.test(token);
+
+  // At least 2 of 3 character classes → looks like a code, not a normal word
+  if ((hasUpper ? 1 : 0) + (hasLower ? 1 : 0) + (hasDigit ? 1 : 0) >= 2) return true;
+
+  // All-uppercase with hyphens (like YOU-FOUND-IT-ON-X)
+  if (/^[A-Z][A-Z0-9]+(-[A-Z0-9]+)+$/.test(token)) return true;
+
+  return false;
+}
+
+/* ===== extractCodesFromArticle ===== */
+/**
+ * Line-based code extraction for games without prefix patterns.
+ * Scans each line of the article body for standalone code tokens.
+ * Designed for codes like: cdY5hUJNZWj, AF26-R8P, YOU-FOUND-IT-ON-X
+ */
+function extractCodesFromArticle(text, exclude) {
+  const codes = new Set();
+  const excluded = new Set(exclude || []);
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  for (const line of lines) {
+    // Skip long lines (paragraphs/sentences)
+    if (line.length > 60) continue;
+
+    // Split line into tokens
+    const tokens = line.split(/[\s,;:|→·「」【】]+/);
+    for (const raw of tokens) {
+      const t = raw.trim();
+      // Must be 7-25 chars, alphanumeric + hyphens only
+      if (t.length < 7 || t.length > 25) continue;
+      if (!/^[A-Za-z0-9-]+$/.test(t)) continue;
+      if (excluded.has(t)) continue;
+      if (!isCouponLike(t)) continue;
+
+      codes.add(t);
     }
   }
 
@@ -239,7 +336,8 @@ async function scrapeNitter(page, handle, patterns, exclude) {
 }
 
 /* ===== scrapeArcaPosts ===== */
-async function scrapeArcaPosts(page, listUrl, boardSlug, patterns, exclude) {
+async function scrapeArcaPosts(page, listUrl, boardSlug, config) {
+  const { patterns, exclude, articleExtract } = config;
   const listText = await scrapePage(page, listUrl);
   if (!listText) return [];
 
@@ -270,7 +368,7 @@ async function scrapeArcaPosts(page, listUrl, boardSlug, patterns, exclude) {
 
   const allCodes = [];
 
-  // Also include listing page codes for pattern games
+  // Include listing page codes for pattern games
   if (patterns) {
     allCodes.push(...extractCodes(listText, patterns, exclude));
   }
@@ -278,18 +376,25 @@ async function scrapeArcaPosts(page, listUrl, boardSlug, patterns, exclude) {
   // Visit top 8 posts
   for (const pid of postIds.slice(0, 8)) {
     await randomSleep(1500, 3500);
-    const postText = await scrapePage(
-      page,
-      `https://arca.live/b/${boardSlug}/${pid}`,
-      20000
-    );
-    if (postText) {
-      const codes = extractCodes(postText, patterns, exclude);
-      if (codes.length > 0) {
-        console.log(`   📄 Post ${pid}: ${codes.length} codes`);
-      }
-      allCodes.push(...codes);
+
+    const postUrl = `https://arca.live/b/${boardSlug}/${pid}`;
+    // Navigate to the post
+    const fullText = await scrapePage(page, postUrl, 20000);
+    if (!fullText) continue;
+
+    let codes;
+    if (articleExtract) {
+      // Line-based extraction from article body only
+      const bodyText = await extractArticleBody(page);
+      codes = extractCodesFromArticle(bodyText, exclude);
+    } else {
+      codes = extractCodes(fullText, patterns, exclude);
     }
+
+    if (codes.length > 0) {
+      console.log(`   📄 Post ${pid}: ${codes.length} codes`);
+    }
+    allCodes.push(...codes);
   }
 
   return [...new Set(allCodes)];
@@ -348,7 +453,7 @@ async function main() {
           } else if (src.type === 'arca') {
             const boardSlug = src.url.match(/\/b\/([^/?]+)/)?.[1] || '';
             sourceCodes = await scrapeArcaPosts(
-              page, src.url, boardSlug, config.patterns, config.exclude
+              page, src.url, boardSlug, config
             );
             console.log(`   Found ${sourceCodes.length} codes from arca.live`);
           }
