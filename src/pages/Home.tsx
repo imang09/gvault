@@ -1,29 +1,28 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n, copyToClipboard } from '../i18n';
-import {
-  getAllGames,
-  getRecentCoupons,
-  getWebPlayableGames,
-  getAllResellListings,
-  getUpcomingGames,
-  getShutdownGames,
-  getGameName,
-  formatDate,
-  getSourceIcon,
-} from '../utils/data';
+import { useGames, useCoupons } from '../hooks/useApi';
+import { formatDate, getSourceIcon } from '../utils/data';
 import styles from './Home.module.css';
 
 export default function Home() {
   const { t, locale } = useI18n();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const games = getAllGames();
-  const recentCoupons = getRecentCoupons(6);
-  const webPlayable = getWebPlayableGames();
-  const resellListings = getAllResellListings().slice(0, 5);
-  const upcomingGames = getUpcomingGames();
-  const shutdownGames = getShutdownGames();
+  const { games, loading: gamesLoading } = useGames(true); // include shutdown for memorial
+  const { coupons: recentCoupons, loading: couponsLoading } = useCoupons({
+    status: 'active',
+    limit: 6,
+  });
+
+  // Derived data from games
+  const activeGames = games.filter(g => !g.isShutdown);
+  const webPlayable = games.filter(g => g.webPlayable && !g.isShutdown);
+  const upcomingGames = games.filter(g => {
+    const today = new Date().toISOString().split('T')[0];
+    return g.releaseDate > today && !g.isShutdown;
+  });
+  const shutdownGames = games.filter(g => g.isShutdown);
 
   const handleCopy = async (code: string, id: string) => {
     const ok = await copyToClipboard(code);
@@ -33,10 +32,18 @@ export default function Home() {
     }
   };
 
+  if (gamesLoading || couponsLoading) {
+    return (
+      <div className={styles.page}>
+        <div className="container">
+          <div className={styles.loadingState}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
-
-
       <div className="container">
         {/* Today's Coupons */}
         <section className={`${styles.section} fade-in`}>
@@ -52,7 +59,7 @@ export default function Home() {
                 <div key={coupon.id} className={`glass-card ${styles.couponItem}`}>
                   <div className={styles.couponItemHeader}>
                     <span className={styles.couponGameName}>
-                      {getGameName(coupon.gameSlug, locale)}
+                      {games.find(g => g.slug === coupon.gameSlug)?.nameEn || coupon.gameSlug}
                     </span>
                     <span className="badge badge-success">{t('coupons.active')}</span>
                   </div>
@@ -69,7 +76,7 @@ export default function Home() {
                     </button>
                   </div>
                   <p className={styles.couponDesc}>
-                    {coupon.descriptionEn || coupon.description}
+                    {coupon.reward || coupon.descriptionEn || coupon.description}
                   </p>
                   <div className={styles.couponMeta}>
                     <span>{getSourceIcon(coupon.source)} {coupon.source}</span>
@@ -89,7 +96,7 @@ export default function Home() {
             <h2 className={styles.sectionTitle}>{t('home.games.title')}</h2>
           </div>
           <div className={styles.gameGrid}>
-            {games.map(game => (
+            {activeGames.map(game => (
               <Link
                 key={game.slug}
                 to={`/games/${game.slug}`}
@@ -151,39 +158,6 @@ export default function Home() {
                     </div>
                   </div>
                 </a>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Resell Preview */}
-        {resellListings.length > 0 && (
-          <section className={`${styles.section} fade-in`}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>{t('home.resell.title')}</h2>
-              <Link to="/resell" className={styles.sectionLink}>
-                {t('common.viewMore')} →
-              </Link>
-            </div>
-            <div className={styles.resellList}>
-              {resellListings.map(item => (
-                <div key={item.id} className={`glass-card ${styles.resellItem}`}>
-                  <span className={styles.resellGame}>
-                    {getGameName(item.gameSlug, locale)}
-                  </span>
-                  <span className={styles.resellInfo}>
-                    Lv.{item.accountLevel}
-                  </span>
-                  <span className={styles.resellInfo}>
-                    SSR×{item.ssrCount}
-                  </span>
-                  <span className={styles.resellInfo}>
-                    {item.serverEn || item.server}
-                  </span>
-                  <span className={styles.resellPrice}>
-                    {item.price}
-                  </span>
-                </div>
               ))}
             </div>
           </section>

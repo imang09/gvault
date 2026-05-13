@@ -9,12 +9,17 @@ import CharacterDetail from './pages/CharacterDetail';
 import Play from './pages/Play';
 import Resell from './pages/Resell';
 import Memorial from './pages/Memorial';
+import Admin from './pages/Admin';
 
 export default function App() {
   return (
     <I18nProvider>
       <BrowserRouter>
         <Routes>
+          {/* Admin — standalone, no Layout */}
+          <Route path="/admin" element={<Admin />} />
+
+          {/* Public — with Layout */}
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/coupons" element={<Coupons />} />
@@ -32,3 +37,4 @@ export default function App() {
     </I18nProvider>
   );
 }
+

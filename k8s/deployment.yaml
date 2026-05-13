@@ -6,7 +6,7 @@ metadata:
   labels:
     app: gvault
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: gvault
@@ -17,25 +17,45 @@ spec:
     spec:
       containers:
         - name: gvault
-          image: ghcr.io/imang09/gvault:2d428e9
+          image: ghcr.io/imang09/gvault:latest
           ports:
-            - containerPort: 80
+            - containerPort: 4000
+          env:
+            - name: PORT
+              value: "4000"
+            - name: DB_DIR
+              value: "/app/data"
+            - name: NODE_ENV
+              value: "production"
+            - name: GVAULT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gvault-secrets
+                  key: api-key
+                  optional: true
+          volumeMounts:
+            - name: gvault-data
+              mountPath: /app/data
           resources:
             requests:
-              cpu: "50m"
-              memory: "64Mi"
-            limits:
-              cpu: "200m"
+              cpu: "100m"
               memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
           livenessProbe:
             httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 5
+              path: /api/health
+              port: 4000
+            initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 3
+              path: /api/health
+              port: 4000
+            initialDelaySeconds: 5
             periodSeconds: 10
+      volumes:
+        - name: gvault-data
+          persistentVolumeClaim:
+            claimName: gvault-data

@@ -5,20 +5,21 @@
  * - arca.live: listing page + individual post scraping
  * - Per-game page isolation to prevent context pollution
  * - Random delays + realistic Chrome UA for anti-bot
+ * - Results posted to API server (no more JSON files or git push)
  *
  * Run: node scripts/scrape-coupons.mjs
  */
 
 import { chromium } from 'playwright';
-import { readFileSync, writeFileSync } from 'fs';
-import { execSync } from 'child_process';
-import { join, dirname } from 'path';
+import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { isXApiAvailable, scrapeXApi } from './x-api-scraper.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const REPO_DIR = process.env.REPO_DIR || join(__dirname, '..');
-const COUPONS_PATH = join(REPO_DIR, 'src', 'data', 'coupons.json');
-const GAMES_PATH = join(REPO_DIR, 'src', 'data', 'games.json');
+
+// API configuration
+const API_BASE = process.env.GVAULT_API_URL || 'http://localhost:4000/api';
+const API_KEY = process.env.GVAULT_API_KEY || 'gvault-dev-key-change-me';
 
 /* ===== Nitter Instances (wiki 2026-04-17, working only) ===== */
 const NITTER_INSTANCES = [
@@ -35,6 +36,7 @@ const GAME_CONFIGS = [
     slug: 'ark-recode',
     name: 'Ark Re:Code',
     urls: [
+      { type: 'x-api', handle: 'ArkRecodeKR' },
       { type: 'nitter', handle: 'ArkRecodeKR' },
       { type: 'arca', url: 'https://arca.live/b/codeark?category=%EC%BF%A0%ED%8F%B0' },
     ],
@@ -45,6 +47,7 @@ const GAME_CONFIGS = [
     slug: 'tenkafuma',
     name: 'TenkafuMA',
     urls: [
+      { type: 'x-api', handle: 'TenkafumaK' },
       { type: 'nitter', handle: 'TenkafumaK' },
       { type: 'arca', url: 'https://arca.live/b/tenkafumaa?target=all&keyword=%EC%BD%94%EB%93%9C&category=info' },
     ],
@@ -55,6 +58,7 @@ const GAME_CONFIGS = [
     slug: 'rise-of-eros',
     name: 'Rise of Eros',
     urls: [
+      { type: 'x-api', handle: 'RiseofEros' },
       { type: 'nitter', handle: 'RiseofEros' },
       { type: 'arca', url: 'https://arca.live/b/riseoferos?category=%EC%BF%A0%ED%8F%B0' },
     ],
@@ -66,6 +70,7 @@ const GAME_CONFIGS = [
     slug: 'cherrytale',
     name: 'CherryTale',
     urls: [
+      { type: 'x-api', handle: 'CherryTale' },
       { type: 'nitter', handle: 'CherryTale' },
       { type: 'arca', url: 'https://arca.live/b/cherrytale?category=%EC%BF%A0%ED%8F%B0' },
     ],
@@ -400,23 +405,32 @@ async function scrapeArcaPosts(page, listUrl, boardSlug, config) {
   return [...new Set(allCodes)];
 }
 
+/* ===== API Helper ===== */
+async function apiPost(path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': API_KEY,
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`API ${res.status}: ${data.error || 'Unknown error'}`);
+  }
+  return data;
+}
+
 /* ===== Main ===== */
 async function main() {
-  console.log('🔍 Gvault Coupon Scraper (Playwright)');
-  console.log(`📅 ${new Date().toISOString()}\n`);
+  console.log('🔍 Gvault Coupon Scraper (Playwright → API)');
+  console.log(`📅 ${new Date().toISOString()}`);
+  console.log(`🔗 API: ${API_BASE}\n`);
 
-  // Load existing coupons
-  let existingCoupons = [];
-  try {
-    existingCoupons = JSON.parse(readFileSync(COUPONS_PATH, 'utf8'));
-  } catch {
-    console.log('ℹ️  No existing coupons file, starting fresh');
-  }
-
-  const existingCodes = new Set(existingCoupons.map((c) => c.code));
-  const newCoupons = [];
   const today = new Date().toISOString().split('T')[0];
   const failedGames = [];
+  const allNewCoupons = [];
 
   // Launch browser
   const browser = await chromium.launch({
@@ -436,11 +450,13 @@ async function main() {
   try {
     for (const config of GAME_CONFIGS) {
       console.log(`\n🎮 ${config.name} (${config.slug})`);
+      const startTime = Date.now();
 
       // New page per game to prevent context pollution
       const page = await context.newPage();
       let foundCodes = [];
       let gameSuccess = false;
+      let gameError = null;
 
       try {
         for (const src of config.urls) {
@@ -448,7 +464,14 @@ async function main() {
 
           let sourceCodes = [];
 
-          if (src.type === 'nitter') {
+          if (src.type === 'x-api') {
+            // X API — no browser needed, direct HTTP
+            if (isXApiAvailable()) {
+              sourceCodes = await scrapeXApi(src.handle, config.patterns, config.exclude);
+            } else {
+              console.log('   ⏭️  X API not configured, skipping');
+            }
+          } else if (src.type === 'nitter') {
             sourceCodes = await scrapeNitter(page, src.handle, config.patterns, config.exclude);
           } else if (src.type === 'arca') {
             const boardSlug = src.url.match(/\/b\/([^/?]+)/)?.[1] || '';
@@ -460,7 +483,7 @@ async function main() {
 
           foundCodes.push(...sourceCodes);
 
-          // Skip remaining sources if enough codes found (≥5 reduces false positive risk)
+          // Skip remaining sources if enough codes found
           if (foundCodes.length >= 5) {
             console.log(`   ℹ️  Enough codes (${foundCodes.length}), skipping remaining sources`);
             break;
@@ -470,34 +493,46 @@ async function main() {
         gameSuccess = true;
       } catch (e) {
         console.log(`   ❌ Game scrape error: ${e.message}`);
+        gameError = e.message;
         failedGames.push(config.slug);
       } finally {
         await page.close();
       }
 
-      if (!gameSuccess) continue;
-
       foundCodes = [...new Set(foundCodes)];
       console.log(`   🔢 Total unique codes: ${foundCodes.length}`);
 
-      for (const code of foundCodes) {
-        if (!existingCodes.has(code)) {
-          newCoupons.push({
-            id: `${config.slug}-${code.toLowerCase()}-${Date.now()}`,
-            gameSlug: config.slug,
-            code,
-            description: `${config.name} coupon`,
-            descriptionEn: `${config.name} coupon`,
-            issuedDate: today,
-            expiryDate: null,
-            expired: false,
-            source: 'other',
-            sourceUrl: config.urls[0].url || `https://nitter.net/${config.urls[0].handle || ''}`,
-          });
-          existingCodes.add(code);
-          console.log(`   ✅ NEW: ${code}`);
+      if (foundCodes.length > 0) {
+        // Prepare coupons for batch API POST
+        const coupons = foundCodes.map((code) => ({
+          gameSlug: config.slug,
+          code,
+          description: `${config.name} coupon`,
+          descriptionEn: `${config.name} coupon`,
+          issuedDate: today,
+          source: 'scraper',
+          sourceUrl: config.urls[0].url || `https://nitter.net/${config.urls[0].handle || ''}`,
+          confidence: 1.0,
+        }));
+
+        try {
+          const result = await apiPost('/coupons/batch', { coupons });
+          console.log(`   📤 API: +${result.inserted} new, ${result.skipped} existing`);
+          if (result.codes && result.codes.length > 0) {
+            allNewCoupons.push(...result.codes);
+            result.codes.forEach((c) => console.log(`   ✅ NEW: ${c}`));
+          }
+        } catch (e) {
+          console.log(`   ❌ API batch error: ${e.message}`);
         }
       }
+
+      // Log scrape result
+      const duration = Date.now() - startTime;
+      try {
+        // Scrape log is informational — don't fail on log errors
+        console.log(`   ⏱️  ${duration}ms`);
+      } catch { /* ignore */ }
     }
   } finally {
     await browser.close();
@@ -508,39 +543,9 @@ async function main() {
     console.log(`\n⚠️  Failed games: ${failedGames.join(', ')}`);
   }
 
-  // Save
-  if (newCoupons.length > 0) {
-    const all = [...existingCoupons, ...newCoupons];
-    writeFileSync(COUPONS_PATH, JSON.stringify(all, null, 2) + '\n');
-    console.log(`\n📝 +${newCoupons.length} coupons (total: ${all.length})`);
-  } else {
-    console.log('\n📝 No new coupons');
-  }
-
-  // Update activeCouponCount
-  try {
-    const games = JSON.parse(readFileSync(GAMES_PATH, 'utf8'));
-    const all = JSON.parse(readFileSync(COUPONS_PATH, 'utf8'));
-    for (const g of games) {
-      g.activeCouponCount = all.filter((c) => c.gameSlug === g.slug && !c.expired).length;
-    }
-    writeFileSync(GAMES_PATH, JSON.stringify(games, null, 2) + '\n');
-  } catch { /* ignore */ }
-
-  // Git push (only when new coupons found)
-  if (newCoupons.length > 0) {
-    try {
-      console.log('\n📤 Pushing to GitHub...');
-      execSync('git add src/data/coupons.json src/data/games.json', { cwd: REPO_DIR });
-      execSync(`git commit -m "data: +${newCoupons.length} coupons ${today}"`, { cwd: REPO_DIR });
-      execSync('git push origin main', { cwd: REPO_DIR });
-      console.log('✅ Pushed to GitHub');
-    } catch (e) {
-      console.log(`❌ Git push failed: ${e.message}`);
-    }
-  }
-
-  console.log('\n✅ Done!');
+  // Summary
+  console.log(`\n📊 Summary: ${allNewCoupons.length} new coupons found`);
+  console.log('✅ Done!');
 }
 
 main().catch(console.error);

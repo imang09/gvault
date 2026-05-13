@@ -1,13 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useI18n, copyToClipboard } from '../i18n';
-import {
-  getAllCoupons,
-  getAllGames,
-  getGameName,
-  formatDate,
-  getSourceIcon,
-  getSourceLabel,
-} from '../utils/data';
+import { useCoupons, useGames } from '../hooks/useApi';
+import { formatDate, getSourceIcon, getSourceLabel } from '../utils/data';
+import ReportModal from '../components/ReportModal';
 import styles from './Coupons.module.css';
 
 type FilterStatus = 'all' | 'active' | 'expired';
@@ -17,17 +12,21 @@ export default function Coupons() {
   const [status, setStatus] = useState<FilterStatus>('all');
   const [gameFilter, setGameFilter] = useState<string>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showReport, setShowReport] = useState(false);
 
-  const allCoupons = getAllCoupons();
-  const games = getAllGames();
+  const { games } = useGames();
+  const { coupons, loading } = useCoupons({
+    game: gameFilter,
+    status: status === 'all' ? undefined : status,
+    limit: 100,
+  });
 
-  const filtered = useMemo(() => {
-    let result = allCoupons;
-    if (status === 'active') result = result.filter(c => !c.expired);
-    if (status === 'expired') result = result.filter(c => c.expired);
-    if (gameFilter !== 'all') result = result.filter(c => c.gameSlug === gameFilter);
-    return result.sort((a, b) => b.issuedDate.localeCompare(a.issuedDate));
-  }, [allCoupons, status, gameFilter]);
+  const getGameName = useMemo(() => {
+    return (slug: string) => {
+      const game = games.find(g => g.slug === slug);
+      return game?.nameEn || game?.name || slug;
+    };
+  }, [games]);
 
   const handleCopy = async (code: string, id: string) => {
     const ok = await copyToClipboard(code);
@@ -40,7 +39,15 @@ export default function Coupons() {
   return (
     <div className={styles.page}>
       <div className="container">
-        <h1 className={styles.pageTitle}>{t('coupons.title')}</h1>
+        <div className={styles.pageHeader}>
+          <h1 className={styles.pageTitle}>{t('coupons.title')}</h1>
+          <button
+            className={`btn btn-primary ${styles.reportBtn}`}
+            onClick={() => setShowReport(true)}
+          >
+            📢 {t('coupons.report') || 'Report Coupon'}
+          </button>
+        </div>
 
         <div className={styles.filters}>
           {(['all', 'active', 'expired'] as FilterStatus[]).map(s => (
@@ -67,16 +74,18 @@ export default function Coupons() {
           </select>
         </div>
 
-        {filtered.length > 0 ? (
+        {loading ? (
+          <div className={styles.emptyState}>Loading...</div>
+        ) : coupons.length > 0 ? (
           <div className={styles.couponList}>
-            {filtered.map(coupon => (
+            {coupons.map(coupon => (
               <div key={coupon.id} className={`glass-card ${styles.couponRow} fade-in`}>
                 <span className={styles.couponRowCode}>{coupon.code}</span>
                 <span className={styles.couponRowDesc}>
-                  {coupon.descriptionEn || coupon.description}
+                  {coupon.reward || coupon.descriptionEn || coupon.description}
                 </span>
                 <span className={styles.couponRowGame}>
-                  {getGameName(coupon.gameSlug, locale)}
+                  {getGameName(coupon.gameSlug)}
                 </span>
                 <span className={styles.couponRowDate}>
                   {formatDate(coupon.expiryDate, locale)}
@@ -106,6 +115,13 @@ export default function Coupons() {
           <div className={styles.emptyState}>{t('coupons.noCoupons')}</div>
         )}
       </div>
+
+      {showReport && (
+        <ReportModal
+          games={games}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   );
 }

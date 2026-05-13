@@ -1,10 +1,10 @@
 #!/bin/bash
-# Gvault Scraper - Server Setup Script
+# Gvault Server Setup Script (v2 - API Architecture)
 # Run as root on 211.188.61.165
 
 set -e
 
-echo "===== Gvault Scraper Setup ====="
+echo "===== Gvault Server Setup (v2) ====="
 
 # 1) Install Node.js 20 if not present
 if ! command -v node &>/dev/null; then
@@ -27,16 +27,29 @@ else
   cd "$SCRAPER_DIR"
 fi
 
-# 3) Configure git for auto-push
-git config user.name "gvault-scraper[bot]"
-git config user.email "scraper@gvault.local"
-
-# 4) Install npm dependencies
-echo "📦 Installing dependencies..."
+# 3) Install npm dependencies for scraper
+echo "📦 Installing scraper dependencies..."
 npm install playwright
 npx playwright install --with-deps chromium
 
-# 5) Create cron wrapper with random delay + auto deploy
+# 4) Generate API key if not exists
+API_KEY_FILE="/opt/gvault/.api-key"
+if [ ! -f "$API_KEY_FILE" ]; then
+  API_KEY=$(openssl rand -hex 32)
+  echo "$API_KEY" > "$API_KEY_FILE"
+  chmod 600 "$API_KEY_FILE"
+  echo "🔑 Generated API key: $API_KEY"
+else
+  API_KEY=$(cat "$API_KEY_FILE")
+  echo "🔑 Using existing API key"
+fi
+
+# 5) Create K8s secret for API key
+kubectl create secret generic gvault-secrets \
+  --from-literal=api-key="$API_KEY" \
+  -n gvault --dry-run=client -o yaml | kubectl apply -f -
+
+# 6) Create cron wrapper (scraper calls API, no more git push)
 cat > /opt/gvault/scripts/cron-scrape.sh << 'CRONEOF'
 #!/bin/bash
 LOG="/var/log/gvault-scraper.log"
@@ -49,25 +62,24 @@ sleep $DELAY
 cd /opt/gvault
 git pull origin main >> $LOG 2>&1 || true
 
-# Run scraper
+# API endpoint (K3S ClusterIP service)
+export GVAULT_API_URL="http://gvault.gvault.svc.cluster.local/api"
+export GVAULT_API_KEY=$(cat /opt/gvault/.api-key)
+
+# X (Twitter) API - load from .env if exists
+if [ -f /opt/gvault/.env ]; then
+  export $(grep -E '^TWITTER_' /opt/gvault/.env | xargs)
+fi
+
+# Run scraper → posts to API
 echo "[$(date)] Starting scraper..." >> $LOG
 node scripts/scrape-coupons.mjs >> $LOG 2>&1
-
-# If coupons were pushed, rebuild & redeploy
-if git log --oneline -1 | grep -q "data:"; then
-  echo "[$(date)] New coupons pushed, rebuilding..." >> $LOG
-  git pull origin main >> $LOG 2>&1
-  docker build -t ghcr.io/imang09/gvault:latest . >> $LOG 2>&1
-  docker save ghcr.io/imang09/gvault:latest | k3s ctr images import - >> $LOG 2>&1
-  kubectl rollout restart deployment gvault -n gvault >> $LOG 2>&1
-  echo "[$(date)] Deploy complete" >> $LOG
-fi
 
 echo "[$(date)] Done" >> $LOG
 CRONEOF
 chmod +x /opt/gvault/scripts/cron-scrape.sh
 
-# 6) Setup cron (3 runs per day at staggered times ≈ 8h intervals)
+# 7) Setup cron (3 runs per day at staggered times ≈ 8h intervals)
 CRON_LINE1="17 3 * * * /opt/gvault/scripts/cron-scrape.sh"
 CRON_LINE2="42 11 * * * /opt/gvault/scripts/cron-scrape.sh"
 CRON_LINE3="8 20 * * * /opt/gvault/scripts/cron-scrape.sh"
@@ -75,7 +87,7 @@ CRON_LINE3="8 20 * * * /opt/gvault/scripts/cron-scrape.sh"
 # Remove old entries and add new
 (crontab -l 2>/dev/null | grep -v 'cron-scrape.sh'; echo "$CRON_LINE1"; echo "$CRON_LINE2"; echo "$CRON_LINE3") | crontab -
 
-# 7) Create log rotation
+# 8) Create log rotation
 cat > /etc/logrotate.d/gvault-scraper << 'LOGEOF'
 /var/log/gvault-scraper.log {
     weekly
@@ -89,8 +101,12 @@ LOGEOF
 echo ""
 echo "===== Setup Complete ====="
 echo "📁 Repo: $SCRAPER_DIR"
+echo "🔑 API Key: $API_KEY_FILE"
 echo "📋 Cron schedule (UTC):"
 crontab -l | grep cron-scrape
 echo "📝 Log: /var/log/gvault-scraper.log"
 echo ""
-echo "🧪 Test run: cd /opt/gvault && node scripts/scrape-coupons.mjs"
+echo "🧪 Test run:"
+echo "  export GVAULT_API_URL=http://gvault.gvault.svc.cluster.local/api"
+echo "  export GVAULT_API_KEY=\$(cat /opt/gvault/.api-key)"
+echo "  cd /opt/gvault && node scripts/scrape-coupons.mjs"

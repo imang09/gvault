@@ -1,5 +1,20 @@
 .page { padding: var(--space-2xl) 0; }
-.pageTitle { font-size: var(--font-size-3xl); font-weight: 800; margin-bottom: var(--space-lg); }
+.pageTitle { font-size: var(--font-size-3xl); font-weight: 800; margin: 0; }
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.reportBtn {
+  font-size: var(--font-size-sm);
+  padding: var(--space-sm) var(--space-lg);
+}
+
 
 .filters {
   display: flex;

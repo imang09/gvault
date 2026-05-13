@@ -1,12 +1,24 @@
 import { useI18n } from '../i18n';
-import { getShutdownGames, formatDate } from '../utils/data';
+import { useGames } from '../hooks/useApi';
+import { formatDate } from '../utils/data';
 import styles from './Memorial.module.css';
 
 export default function Memorial() {
   const { t, locale } = useI18n();
-  const games = getShutdownGames();
+  const { games: allGames, loading } = useGames(true);
+  const games = allGames.filter(g => g.isShutdown);
 
   const l = (ko?: string, en?: string) => (en || ko || '');
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className="container">
+          <div className={styles.emptyState}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>

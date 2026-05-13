@@ -1,12 +1,23 @@
 import { useParams, Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
-import { getGameBySlug, formatDate } from '../utils/data';
+import { useGame } from '../hooks/useApi';
+import { formatDate } from '../utils/data';
 import styles from './GameDetail.module.css';
 
 export default function GameDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { t, locale } = useI18n();
-  const game = slug ? getGameBySlug(slug) : undefined;
+  const { game, loading } = useGame(slug);
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className="container">
+          <div className={styles.notFound}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!game) {
     return (
