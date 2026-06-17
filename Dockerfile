@@ -13,6 +13,9 @@ COPY package.json pnpm-lock.yaml ./
 # Copy prisma schema so client can be generated
 COPY prisma ./prisma/
 
+# pnpm patch 파일 복사 (wouter 패치용)
+COPY patches ./patches/
+
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
