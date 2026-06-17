@@ -53,4 +53,4 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Start the application
-CMD ["pnpm", "run", "start"]
+CMD sh -c "npx prisma db push && pnpm run start"
