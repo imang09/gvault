@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # 1. 현재 메인 앱
+  app:
+    build: .
+    container_name: manus_labs_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # Prisma SQLite DB 유지를 위한 볼륨 마운트
+      - ./prisma/dev.db:/app/prisma/dev.db
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+
+  # 2. Nginx Proxy Manager (라우팅 및 무료 HTTPS 인증서)
+  # 참고: 서버 포트 80, 443, 81을 외부로 노출합니다.
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx_proxy_manager
+    restart: unless-stopped
+    ports:
+      - '80:80'    # HTTP 트래픽
+      - '81:81'    # NPM 관리자 웹 UI (기본 로그인: admin@example.com / changeme)
+      - '443:443'  # HTTPS 트래픽
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
