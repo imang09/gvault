@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Game {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // male-oriented, female-oriented, various
+  description String
+  link        String
+  platforms   String   // JSON string or comma-separated
+  isActive    Boolean  @default(true)
+  coupons     Coupon[]
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String
+  reward      String
+  expiryDate  DateTime
+  isPublished Boolean  @default(false) // 3회 누적 시 true로 변경
+  isExpired   Boolean  @default(false) // Cron job에 의해 업데이트
+  gameId      String
+  game        Game     @relation(fields: [gameId], references: [id])
+  
+  // 제보한 사용자의 IP를 기록하여 동일 IP 중복 제출 방지
+  submittedBy UserAction[]
+  
+  createdAt   DateTime @default(now())
+}
+
+model MemorialGame {
+  id             String   @id @default(cuid())
+  name           String
+  description    String
+  terminatedDate DateTime?
+  isPublished    Boolean  @default(false) // 동의 10회 도달 시 true로 변경
+  votes          Int      @default(0)
+  
+  votedBy        UserAction[]
+
+  createdAt      DateTime @default(now())
+}
+
+// IP 추적 및 쓰로틀링, 다수결 중복 방지를 위한 범용 모델
+model UserAction {
+  id             String        @id @default(cuid())
+  ipAddress      String
+  actionType     String        // "SUBMIT_COUPON" or "VOTE_MEMORIAL"
+  
+  couponId       String?
+  coupon         Coupon?       @relation(fields: [couponId], references: [id])
+  
+  memorialGameId String?
+  memorialGame   MemorialGame? @relation(fields: [memorialGameId], references: [id])
+
+  createdAt      DateTime      @default(now())
+
+  // 동일 IP가 동일 액션을 중복으로 하지 못하게 막기 위한 제약
+  @@unique([ipAddress, actionType, couponId])
+  @@unique([ipAddress, actionType, memorialGameId])
+}
