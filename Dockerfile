@@ -1,11 +1,11 @@
 # Base image
-FROM node:20-alpine AS builder
+FROM node:20-bookworm-slim AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm globally and openssl for Prisma
+RUN apt-get update && apt-get install -y openssl && npm install -g pnpm
 
 # Copy package management files
 COPY package.json pnpm-lock.yaml ./
@@ -31,12 +31,12 @@ RUN pnpm run build
 # ==========================================
 # Production Stage
 # ==========================================
-FROM node:20-alpine AS runner
+FROM node:20-bookworm-slim AS runner
 
 WORKDIR /app
 
-# Install pnpm globally in the runner stage as well
-RUN npm install -g pnpm
+# Install pnpm globally and openssl in the runner stage
+RUN apt-get update && apt-get install -y openssl && npm install -g pnpm
 
 # Copy only the necessary files from the builder stage
 COPY --from=builder /app/package.json ./
