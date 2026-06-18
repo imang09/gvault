@@ -86,8 +86,8 @@ install_cert_manager() {
     helm repo add jetstack https://charts.jetstack.io
     helm repo update
     
-    # Install cert-manager
-    helm install cert-manager jetstack/cert-manager \
+    # Install or upgrade cert-manager
+    helm upgrade --install cert-manager jetstack/cert-manager \
         --namespace cert-manager \
         --create-namespace \
         --set installCRDs=true \
