@@ -75,8 +75,8 @@ spec:
       # Main containers
       containers:
         - name: erolabs
-          image: erolabs:latest  # Change to your registry/image:tag
-          imagePullPolicy: Always
+          image: erolabs:latest  # Using local image loaded via k3s ctr
+          imagePullPolicy: IfNotPresent
           
           # Port configuration
           ports:

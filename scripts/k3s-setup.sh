@@ -141,8 +141,8 @@ EOF
     log_success "ClusterIssuer created successfully"
 }
 
-# Build and push Docker image
-build_docker_image() {
+# Build Docker image and load directly into K3s
+build_and_load_image() {
     log_info "Building Docker image..."
     
     if ! command -v docker &> /dev/null; then
@@ -150,28 +150,12 @@ build_docker_image() {
         exit 1
     fi
     
-    docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
+    docker build -t erolabs:latest .
     
-    log_info "Pushing Docker image to registry..."
-    docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+    log_info "Loading Docker image into K3s (No external registry needed)..."
+    docker save erolabs:latest | k3s ctr images import -
     
-    log_success "Docker image built and pushed successfully"
-}
-
-# Load Docker image into K3s (for local development)
-load_docker_image() {
-    log_info "Loading Docker image into K3s..."
-    
-    if ! command -v docker &> /dev/null; then
-        log_warning "Docker is not installed. Skipping local image load."
-        return
-    fi
-    
-    # For K3s with containerd, we need to import the image
-    docker save ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} | \
-        k3s ctr images import -
-    
-    log_success "Docker image loaded into K3s"
+    log_success "Docker image built and loaded into K3s successfully"
 }
 
 # Create namespace and secrets
@@ -197,8 +181,8 @@ setup_namespace_and_secrets() {
 deploy_application() {
     log_info "Deploying EroArchive application..."
     
-    # Update image in deployment
-    sed -i "s|erolabs:latest|${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" k8s/03-deployment.yaml
+    # Using local image, no need to replace image name in deployment
+    # sed -i "s|erolabs:latest|${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" k8s/03-deployment.yaml
     
     # Apply Kubernetes manifests
     kubectl apply -f k8s/03-deployment.yaml
@@ -277,7 +261,7 @@ main() {
     install_k3s
     install_cert_manager
     create_cluster_issuer
-    build_docker_image
+    build_and_load_image
     setup_namespace_and_secrets
     deploy_application
     setup_ingress
