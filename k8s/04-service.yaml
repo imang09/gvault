@@ -1,0 +1,45 @@
+---
+# ClusterIP Service for internal communication
+apiVersion: v1
+kind: Service
+metadata:
+  name: erolabs-service
+  namespace: erolabs
+  labels:
+    app: erolabs
+spec:
+  type: ClusterIP
+  selector:
+    app: erolabs
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+  sessionAffinity: None
+
+---
+# LoadBalancer Service for external access (optional, use Ingress instead)
+apiVersion: v1
+kind: Service
+metadata:
+  name: erolabs-lb
+  namespace: erolabs
+  labels:
+    app: erolabs
+  annotations:
+    # For K3s with Traefik
+    traefik.ingress.kubernetes.io/service.serversscheme: http
+spec:
+  type: LoadBalancer
+  selector:
+    app: erolabs
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+      nodePort: 30080  # K3s node port range: 30000-32767
+  # For K3s, you can specify externalIPs if you have static IPs
+  # externalIPs:
+  #   - YOUR_PUBLIC_IP

@@ -1,0 +1,106 @@
+---
+# Ingress for EroArchive application (Traefik - default in K3s)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: erolabs-ingress
+  namespace: erolabs
+  labels:
+    app: erolabs
+  annotations:
+    # Traefik annotations
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
+    
+    # CORS headers (if needed)
+    traefik.ingress.kubernetes.io/router.middlewares: erolabs-cors@kubernetescrd
+    
+    # Rate limiting (optional)
+    # traefik.ingress.kubernetes.io/router.middlewares: erolabs-ratelimit@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    # Main domain
+    - host: erolabs.example.com  # Change to your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: erolabs-service
+                port:
+                  number: 80
+    
+    # API subdomain (optional)
+    - host: api.erolabs.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: erolabs-service
+                port:
+                  number: 80
+  
+  # TLS configuration
+  tls:
+    - hosts:
+        - erolabs.example.com
+        - api.erolabs.example.com
+      secretName: erolabs-tls
+
+---
+# Middleware for CORS (Traefik)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: erolabs-cors
+  namespace: erolabs
+spec:
+  headers:
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    accessControlAllowOriginList:
+      - "https://erolabs.example.com"
+      - "https://api.erolabs.example.com"
+    accessControlMaxAge: 100
+    addVaryHeader: true
+
+---
+# Middleware for rate limiting (optional)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: erolabs-ratelimit
+  namespace: erolabs
+spec:
+  rateLimit:
+    average: 100
+    burst: 50
+    period: 1s
+
+---
+# Certificate for Let's Encrypt (requires cert-manager)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: erolabs-cert
+  namespace: erolabs
+spec:
+  secretName: erolabs-tls
+  duration: 2160h  # 90 days
+  renewBefore: 720h  # 30 days
+  commonName: erolabs.example.com
+  dnsNames:
+    - erolabs.example.com
+    - api.erolabs.example.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer

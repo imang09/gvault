@@ -1,56 +1,52 @@
-# Base image
-FROM node:20-bookworm-slim AS builder
+# Stage 1: Build stage
+FROM node:22-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install pnpm globally and openssl for Prisma
-RUN apt-get update && apt-get install -y openssl && npm install -g pnpm
+# Install pnpm
+RUN npm install -g pnpm@10.4.1
 
-# Copy package management files
+# Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Copy prisma schema so client can be generated
-COPY prisma ./prisma/
-
-# pnpm patch 파일 복사 (wouter 패치용)
-COPY patches ./patches/
-
 # Install dependencies
-RUN pnpm install --no-frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false
 
-# Copy the rest of the application code
+# Copy source code
 COPY . .
 
-# Generate Prisma Client
-RUN pnpm prisma generate
+# Build application
+RUN pnpm build
 
-# Build the project (Vite and ESBuild)
-RUN pnpm run build
-
-# ==========================================
-# Production Stage
-# ==========================================
-FROM node:20-bookworm-slim AS runner
+# Stage 2: Runtime stage
+FROM node:22-alpine
 
 WORKDIR /app
 
-# Install pnpm globally and openssl in the runner stage
-RUN apt-get update && apt-get install -y openssl && npm install -g pnpm
+# Install pnpm for production
+RUN npm install -g pnpm@10.4.1
 
-# Copy only the necessary files from the builder stage
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
-COPY --from=builder /app/node_modules ./node_modules
+# Copy package files from builder
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
+
+# Install production dependencies only
+RUN pnpm install --frozen-lockfile --prod=true
+
+# Copy built application from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
 
-# Environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
 
-# Expose the port the app runs on
+USER nodejs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+# Expose port
 EXPOSE 3000
 
-# Start the application
-CMD sh -c "npx prisma db push && pnpm run start"
+# Start application
+CMD ["node", "dist/index.js"]

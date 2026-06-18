@@ -19,6 +19,10 @@ async function startServer() {
   // API Routes
   // ==========================================
 
+  // K3s Health Check & Readiness Probes
+  app.get("/health", (_req, res) => res.status(200).send("OK"));
+  app.get("/ready", (_req, res) => res.status(200).send("OK"));
+
   // 1. 쿠폰 등록 API (3명 동의 시 자동 퍼블리싱)
   app.post("/api/coupons", async (req, res) => {
     try {
@@ -197,9 +201,10 @@ async function startServer() {
   });
 
   const port = process.env.PORT || 3000;
+  const host = "0.0.0.0";
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
+  server.listen(Number(port), host, () => {
+    console.log(`Server running on http://${host}:${port}/`);
     console.log(`[CRON] Daily cleanup job scheduled.`);
   });
 }

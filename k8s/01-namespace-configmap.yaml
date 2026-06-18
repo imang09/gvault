@@ -1,0 +1,22 @@
+---
+# Namespace for EroArchive application
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: erolabs
+  labels:
+    name: erolabs
+
+---
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: erolabs-config
+  namespace: erolabs
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  # Add other non-sensitive configuration here
+  # LOG_LEVEL: "info"
+  # DATABASE_POOL_SIZE: "10"
